@@ -4,6 +4,8 @@
 // To execute, run the following within powershell
 // ./Build.ps1 -Target "build"
 
+#Addin "Cake.StyleCop"
+
 const string Configuration = "Release";
 
 var target = Argument("target", "Build");
@@ -30,9 +32,16 @@ Task("Build")
         MSBuild(solutionFile, settings);
 
 	});
+    
+Task("Code-Quality")
+    .IsDependentOn("Build")
+    .Does(() => {
+        var solutionFile = File("./Cake.StyleCop.sln");
+        StyleCopAnalyse(solutionFile, null);
+    });
 
 Task("Package")
-	.IsDependentOn("Build")
+    .IsDependentOn("Code-Quality")
 	.Does(() => {
 	
         if (!DirectoryExists("./nuget")){

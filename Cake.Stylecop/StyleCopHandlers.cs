@@ -34,7 +34,7 @@
 
             Cake.Common.Diagnostics.LoggingAliases.Error(
                 _context,
-                string.Format("{0}: {1}", args.Violation.Rule.CheckId, args.Message));
+                string.Format("{0}: {1} @ Line {2}", args.Violation.Rule.CheckId, args.Message, args.LineNumber));
         }
     }
 }

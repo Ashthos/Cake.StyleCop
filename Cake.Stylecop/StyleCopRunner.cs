@@ -24,7 +24,7 @@
             
             var projectPath = Cake.Common.IO.DirectoryAliases.Directory(context, solutionFile.MakeAbsolute(context.Environment).GetDirectory().FullPath);
         
-            Cake.Common.Diagnostics.LoggingAliases.Information(context, $"Project Path: {projectPath.Path.FullPath}");
+            Cake.Common.Diagnostics.LoggingAliases.Information(context, string.Format("Project Path: {0}", projectPath.Path.FullPath));
         
             var styleCopConsole = new StyleCop.StyleCopConsole(
                 stylecopSettingsFile, 
@@ -33,17 +33,19 @@
                 null, 
                 true);
             
-            var scProjects = new List<CodeProject>();
+            var styleCopProjects = new List<CodeProject>();
         
             var solution = solutionParser.Parse(solutionFile);
-            foreach(var solutionProject in solution.Projects){
+            foreach (var solutionProject in solution.Projects)
+            {
                 var project = projectParser.Parse(solutionProject.Path);
                 var styleCopProject = new CodeProject(0, solutionProject.Path.GetDirectory().ToString(), new Configuration(null));
-                scProjects.Add(styleCopProject);
+                styleCopProjects.Add(styleCopProject);
             
-                foreach(var projectFile in project.Files){
-                                            
-                    if (projectFile.FilePath.GetExtension() == ".cs"){
+                foreach (var projectFile in project.Files)
+                {
+                    if (projectFile.FilePath.GetExtension() == ".cs")
+                    {
                         styleCopConsole.Core.Environment.AddSourceCode(
                             styleCopProject, 
                             projectFile.FilePath.ToString(), 
@@ -56,12 +58,13 @@
 
             styleCopConsole.OutputGenerated += handler.OnOutputGenerated;
             styleCopConsole.ViolationEncountered += handler.ViolationEncountered;
-            styleCopConsole.Start(scProjects.ToArray(), true);
+            styleCopConsole.Start(styleCopProjects.ToArray(), true);
             styleCopConsole.OutputGenerated -= handler.OnOutputGenerated;
             styleCopConsole.ViolationEncountered -= handler.ViolationEncountered;
 
-            if (handler.TotalViolations > 0){
-                throw new Exception($"{handler.TotalViolations} StyleCop violations encountered.");
+            if (handler.TotalViolations > 0)
+            {
+                throw new Exception(string.Format("{0} StyleCop violations encountered.", handler.TotalViolations));
             }
         }        
     }    
