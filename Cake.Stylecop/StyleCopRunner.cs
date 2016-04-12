@@ -20,8 +20,9 @@
             var solutionParser = new SolutionParser(context.FileSystem, context.Environment);
             var projectParser = new ProjectParser(context.FileSystem, context.Environment);
         
-            string stylecopSettingsFile = settingsFile == null ? null : settingsFile.ToString();
-            var projectPath = Cake.Common.IO.DirectoryAliases.Directory(context, solutionFile.Path.GetDirectory());
+            var stylecopSettingsFile = settingsFile == null ? null : settingsFile.ToString();
+            
+            var projectPath = Cake.Common.IO.DirectoryAliases.Directory(context, solutionFile.MakeAbsolute(context.Environment).GetDirectory().FullPath);
         
             Cake.Common.Diagnostics.LoggingAliases.Information(context, $"Project Path: {projectPath.Path.FullPath}");
         
@@ -62,10 +63,6 @@
             if (handler.TotalViolations > 0){
                 throw new Exception($"{handler.TotalViolations} StyleCop violations encountered.");
             }
-        }
-
-        
-    }
-
-    
+        }        
+    }    
 }
