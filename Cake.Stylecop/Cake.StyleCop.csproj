@@ -64,6 +64,8 @@
     <Compile Include="StyleCopHandlers.cs" />
     <Compile Include="StylecopRunner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StyleCopSettings.cs" />
+    <Compile Include="StyleCopSettingsExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Cake.Stylecop.nuspec" />

@@ -3,25 +3,28 @@
     using System;
     using Cake.Core;
     using Cake.Core.Annotations;
-    using Cake.Core.IO;
 
     [CakeAliasCategory("StylecopCategory")]
     public static class StylecopAlias
     {
         [CakeMethodAlias]
-        public static void StyleCopAnalyse(this ICakeContext context, FilePath solutionFile, FilePath settingsFile)
+        public static void StyleCopAnalyse(this ICakeContext context, SettingsDelegate settingsDelegate)
         {
             if (context == null)
             {
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
             }
             
-            if (solutionFile == null)
+            if (settingsDelegate == null)
             {
-                throw new ArgumentNullException("solutionFile");
+                throw new ArgumentNullException(nameof(settingsDelegate));
             }
 
-            StyleCopRunner.Execute(context, solutionFile, settingsFile);
+            StyleCopRunner.Execute(context, settingsDelegate);
+            StyleCopRunner.Execute(
+                context,
+                settings => settings.WithSolution(null).WithSettings(null).ToResultFile(null));
+
         }
     }
 }
