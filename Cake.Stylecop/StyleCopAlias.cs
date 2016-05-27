@@ -21,10 +21,6 @@
             }
 
             StyleCopRunner.Execute(context, settingsDelegate);
-            StyleCopRunner.Execute(
-                context,
-                settings => settings.WithSolution(null).WithSettings(null).ToResultFile(null));
-
         }
     }
 }
