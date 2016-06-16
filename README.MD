@@ -56,7 +56,7 @@ StyleCopReport(settings => settings
 
 ```
 
-## Customised the transform
+## Customise the transform
 
 There is a default xslt stylesheet which is used, but if you want to override this with your own, you can pass it to the settings in either method as follows
 
