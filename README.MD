@@ -13,8 +13,24 @@ var target = Argument("target", "StyleCop");
 Task("StyleCop")
   .Does(() =>
 {
-  var solutionFile    = File("./MyProgram.sln");
-  StyleCopAnalyse(solutionFile, null);
+    // solution file
+    var solutionFile = File("MySolution.sln");
+
+    // stylecop settings file
+    var settingsFile = File("Settings.stylecop");
+    
+    // xml results file
+    var resultFile = File("StylecopResults.xml");
+
+    // html report file
+    var htmlFile = File("StylecopResults.html");
+
+    StyleCopAnalyse(settings => settings
+        .WithSolution(solutionFile)
+        .WithSettings(settingsFile)
+        .ToResultFile(resultFile)
+        .ToHtmlReport(htmlFile)
+    );
 });
 
 RunTarget(target);
