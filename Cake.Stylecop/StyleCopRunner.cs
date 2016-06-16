@@ -89,7 +89,7 @@
                 context.CopyDirectory(context.Directory(toolPath + "/resources"), settings.HtmlReportFile.GetDirectory());
 
                 context.Log.Information($"Stylecop: Creating html report {settings.HtmlReportFile.FullPath}");
-                Transform(context, settings.ResultsFile.MakeAbsolute(context.Environment), settings.StyleSheet ?? context.MakeAbsolute(defaultStyleSheet));
+                Transform(context, settings.HtmlReportFile, settings.ResultsFile.MakeAbsolute(context.Environment), settings.StyleSheet ?? context.MakeAbsolute(defaultStyleSheet));
             }
 
             if (handler.TotalViolations > 0)
@@ -106,7 +106,7 @@
         /// </param>
         /// <param name="transformFile">The filePath for the xslt transform</param>
         /// <param name="context"></param>
-        private static void Transform(ICakeContext context, FilePath outputXmlFile, FilePath transformFile)
+        private static void Transform(ICakeContext context, FilePath htmlFile, FilePath outputXmlFile, FilePath transformFile)
         {
             if (!context.FileExists(outputXmlFile))
             {
@@ -125,10 +125,9 @@
             xt.Load(transformFile.FullPath);
             context.Log.Debug($"Stylecop: Loaded transform {transformFile.FullPath}");
 
-            var htmlout = string.Format(CultureInfo.CurrentCulture, "{0}\\{1}.html", outputXmlFile.GetDirectory().FullPath, outputXmlFile.GetFilenameWithoutExtension());
-            context.Log.Debug($"Stylecop: Starting transform {outputXmlFile.FullPath} to {htmlout}");
-            xt.Transform(outputXmlFile.FullPath, htmlout);
-            context.Log.Debug($"Stylecop: Finished transform {outputXmlFile.FullPath} to {htmlout}");
+            context.Log.Debug($"Stylecop: Starting transform {outputXmlFile.FullPath} to {htmlFile}");
+            xt.Transform(outputXmlFile.FullPath, htmlFile.FullPath);
+            context.Log.Debug($"Stylecop: Finished transform {outputXmlFile.FullPath} to {htmlFile}");
         }
 
         public static string AssemblyDirectory(Assembly assembly)
@@ -160,7 +159,7 @@
                 context.CopyDirectory(context.Directory(toolPath + "/resources"), context.Directory(settings.HtmlReportFile.GetDirectory() + "/resources"));
 
                 context.Log.Information($"Stylecop: Creating html report {settings.HtmlReportFile.FullPath}");
-                Transform(context, mergedResultsFile.Path.MakeAbsolute(context.Environment), settings.StyleSheet ?? context.MakeAbsolute(defaultStyleSheet));
+                Transform(context, settings.HtmlReportFile.MakeAbsolute(context.Environment), mergedResultsFile.Path.MakeAbsolute(context.Environment), settings.StyleSheet ?? context.MakeAbsolute(defaultStyleSheet));
             }
             catch (Exception e)
             {
