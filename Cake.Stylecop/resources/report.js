@@ -1,17 +1,15 @@
-﻿
-        function toggle (name, img)
-        {
-        var element = document.getElementById (name);
+﻿function toggle(name, img) {
+    var element = document.getElementById(name);
 
-        if (element.style.display == 'none')
-        element.style.display = '';
-        else
-        element.style.display = 'none';
+    if (element.style.display === "none")
+        element.style.display = "";
+    else
+        element.style.display = "none";
 
-        var img_element = document.getElementById (img);
+    var imgElement = document.getElementById(img);
 
-        if (img_element.src.indexOf ('minus.png') > 0)
-        img_element.src = 'plus.png';
-        else
-        img_element.src = 'minus.png';
-        }
+    if (imgElement.src.indexOf("minus.png") > 0)
+        imgElement.src = "resources/plus.png";
+    else
+        imgElement.src = "resources/minus.png";
+}

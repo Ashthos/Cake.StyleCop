@@ -11,8 +11,8 @@
 
   <xsl:template match="/">
     <div id="stylecop-report">
-      <link rel="stylesheet" type="text/css" href="stylecop.css" />
-      <script src="report.js" type="text/javascript">;</script>
+      <link rel="stylesheet" type="text/css" href="resources/stylecop.css" />
+      <script src="resources/report.js" type="text/javascript">;</script>
 
       <div class="header">
         <div class="headertext">
@@ -50,10 +50,10 @@
 
     <tr class="clickablerow" onclick="toggle('{$module.id}', 'img-{$module.id}')">
       <td style="width: 10px">
-        <img id="img-{$module.id}" src="plus.png" />
+        <img id="img-{$module.id}" src="resources/plus.png" />
       </td>
       <td style="width: 16px">
-        <img src="error.png" />
+        <img src="resources/error.png" />
       </td>
       <td>
         <xsl:value-of select="$source" />
@@ -96,7 +96,7 @@
 
               <tr class="clickablerow" onclick="toggle('{$module.id}-{$message.id}', 'img-{$module.id}-{$message.id}')">
                 <td style="width: 10px">
-                  <img id="img-{$module.id}-{$message.id}" src="plus.png" />
+                  <img id="img-{$module.id}-{$message.id}" src="resources/plus.png" />
                 </td>
                 <td>
                   <xsl:value-of select="@LineNumber" />

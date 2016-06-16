@@ -23,5 +23,21 @@
             
             StyleCopRunner.Execute(context, settingsDelegate);
         }
+
+        [CakeMethodAlias]
+        public static void StyleCopReport(this ICakeContext context, ReportSettingsDelegate settingsDelegate)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (settingsDelegate == null)
+            {
+                throw new ArgumentNullException(nameof(settingsDelegate));
+            }
+            
+            StyleCopRunner.Report(context, settingsDelegate);
+        }
     }
 }

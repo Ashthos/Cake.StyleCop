@@ -15,15 +15,17 @@ const string Configuration = "Release";
     var solutionFile = File("./Cake.StyleCop.sln");
     var artifactsDir = Directory("./artifacts");
     var nupkgDestDir = artifactsDir + Directory("nuget-package");
-    var stylecopResultsDir = artifactsDir + Directory("stylecop-reports");
+    var stylecopResultsDir = artifactsDir + Directory("stylecop");
+    var stylecopReportsDir = stylecopResultsDir + Directory("stylecop-reports");
 
 
     Task("Clean")
     .Does(() => {
         CleanDirectories(new DirectoryPath[] {
-            artifactsDir,
+            //artifactsDir,
             nupkgDestDir,
-            stylecopResultsDir
+            stylecopResultsDir,
+            stylecopReportsDir
         });
 
         CleanDirectories("./**/bin/**");
@@ -52,13 +54,24 @@ const string Configuration = "Release";
         
             var settingsFile = solutionFile.Path.GetDirectory() + File("Settings.stylecop");
             var resultFile = stylecopResultsDir + File("StylecopResults.xml");
-            var htmlFile = stylecopResultsDir + File("StylecopResults.html");
+            var htmlFile = stylecopReportsDir + File("StylecopResults.html");
 
             StyleCopAnalyse(settings => settings
                 .WithSolution(solutionFile)
                 .WithSettings(settingsFile)
                 .ToResultFile(resultFile)
+            );
+
+            var resultFilePattern = stylecopResultsDir.Path + "/*.xml";
+            Information("resultFilePattern: {0}", resultFilePattern);
+            var resultFiles = GetFiles(resultFilePattern);
+            foreach(var file in resultFiles){
+                Information("resultFile: {0}", file.FullPath);
+            }
+            
+            StyleCopReport(settings => settings
                 .ToHtmlReport(htmlFile)
+                .AddResultFiles(resultFiles)
             );
         });
 
@@ -67,7 +80,7 @@ const string Configuration = "Release";
     .Does(() => {
 	
     var nuGetPackSettings   = new NuGetPackSettings {
-    Version                 = "1.2.1",
+    Version                 = "1.2.8",
     BasePath                = "./Cake.StyleCop",
     OutputDirectory         = nupkgDestDir
     };

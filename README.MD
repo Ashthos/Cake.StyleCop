@@ -35,3 +35,23 @@ Task("StyleCop")
 
 RunTarget(target);
 ```
+
+## Merging multiple stylecop result files
+
+A second method is available if you need to merge several result files together to produce one report. This is useful for many CI servers
+
+```csharp
+
+// html report file
+var htmlFile = File("StylecopResults.html");
+
+// reports 
+var resultFiles = GetFiles("*.xml");
+
+// will merge the xml files together before producing a single html file
+StyleCopReport(settings => settings
+    .ToHtmlReport(htmlFile)
+    .AddResultFiles(resultFiles)
+);
+
+```
