@@ -1,11 +1,12 @@
 ﻿namespace Cake.Stylecop
 {
     using System;
+
     using Cake.Core;
     using Cake.Core.Annotations;
 
-    [CakeAliasCategory("StylecopCategory")]
-    public static class StylecopAlias
+    [CakeAliasCategory("Stylecop")]
+    public static class StylecopAlias 
     {
         [CakeMethodAlias]
         public static void StyleCopAnalyse(this ICakeContext context, SettingsDelegate settingsDelegate)
@@ -19,7 +20,7 @@
             {
                 throw new ArgumentNullException(nameof(settingsDelegate));
             }
-
+            
             StyleCopRunner.Execute(context, settingsDelegate);
         }
     }

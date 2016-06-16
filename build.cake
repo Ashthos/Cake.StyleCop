@@ -8,70 +8,87 @@
 
 const string Configuration = "Release";
 
-var target = Argument("target", "Build");
+    var target = Argument("target", "Build");
+    var nugetApiKey = Argument<string>("nugetApi", null);
+    var nugetSource = Argument<string>("nugetSource", null); // nuget.org
 
-Task("Clean")
-	.Does(() => {
-		CleanDirectories("./**/bin/**");
-	});
+    var solutionFile = File("./Cake.StyleCop.sln");
+    var artifactsDir = Directory("./artifacts");
+    var nupkgDestDir = artifactsDir + Directory("nuget-package");
+    var stylecopResultsDir = artifactsDir + Directory("stylecop-reports");
 
-Task("Build")
-	.IsDependentOn("Clean")
-	.Does(() => {
 
-		var solutionFile = new FilePath("Cake.StyleCop.sln");
-        
+    Task("Clean")
+    .Does(() => {
+        CleanDirectories(new DirectoryPath[] {
+            artifactsDir,
+            nupkgDestDir,
+            stylecopResultsDir
+        });
+
+        CleanDirectories("./**/bin/**");
+    });
+
+    Task("Build")
+    .IsDependentOn("Clean")
+    .Does(() => {
+
         Information("Restoring Nuget Packages");
         NuGetRestore(solutionFile);
-        
+            
         var settings = new MSBuildSettings();
         settings.Configuration = Configuration;
         settings.WithTarget("build");
-        
+            
         Information("Compiling Solution");
         MSBuild(solutionFile, settings);
 
-	});
-    
-Task("Code-Quality")
-    .IsDependentOn("Build")
-    .Does(() => {
-        var solutionFile = File("./Cake.StyleCop.sln");
-        StyleCopAnalyse(solutionFile, null);
     });
-
-Task("Package")
-    .IsDependentOn("Code-Quality")
-	.Does(() => {
-	
-        if (!DirectoryExists("./nuget")){
-            CreateDirectory("./nuget");
-        }
     
-		var nuGetPackSettings   = new NuGetPackSettings {
-                Version                 = "1.0.0",
-                BasePath                = "./Cake.StyleCop",
-                OutputDirectory         = "./nuget"
-            };
-
-		NuGetPack(File("./Cake.StyleCop/Cake.StyleCop.nuspec"), nuGetPackSettings);
-
-	});
-    
-Task("Publish")
-    .IsDependentOn("Package")
-    .Does(() => {
-       
-        var nugetApiKey = EnvironmentVariable("NugetApiKey");
-       
-        var package = "./nuget/Cake.StyleCop.1.0.0.nupkg";
-            
-        // Push the package.
-        NuGetPush(package, new NuGetPushSettings {
-            Source = null, // nuget.org
-            ApiKey = nugetApiKey
-        });
+    Task("Code-Quality")
+        .IsDependentOn("Build")
+        .ContinueOnError()
+        .Does(() => {
         
+            var settingsFile = solutionFile.Path.GetDirectory() + File("Settings.stylecop");
+            var resultFile = stylecopResultsDir + File("StylecopResults.xml");
+            var htmlFile = stylecopResultsDir + File("StylecopResults.html");
+
+            StyleCopAnalyse(settings => settings
+                .WithSolution(solutionFile)
+                .WithSettings(settingsFile)
+                .ToResultFile(resultFile)
+                .ToHtmlReport(htmlFile)
+            );
+        });
+
+    Task("Package")
+    .IsDependentOn("Code-Quality")
+    .Does(() => {
+	
+    var nuGetPackSettings   = new NuGetPackSettings {
+    Version                 = "1.2.1",
+    BasePath                = "./Cake.StyleCop",
+    OutputDirectory         = nupkgDestDir
+    };
+
+    NuGetPack(File("./Cake.StyleCop/Cake.StyleCop.nuspec"), nuGetPackSettings);
+
+    });
+    
+    Task("Publish")
+        .IsDependentOn("Package")
+        .Does(() => {
+        
+            var packages = GetFiles("./nuget/Cake.StyleCop.*.nupkg");
+                
+            foreach (var package in packages) {    
+                // Push the package.
+                NuGetPush(package, new NuGetPushSettings {
+                    Source = nugetSource,
+                    ApiKey = nugetApiKey
+                    });
+            }
     });
 
-RunTarget(target);
+    RunTarget(target);

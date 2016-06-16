@@ -49,5 +49,12 @@ namespace Cake.Stylecop
             settings.ResultsFile = resultFile;
             return settings;
         }
+
+        public static StyleCopSettings ToHtmlReport(this StyleCopSettings settings, FilePath htmlFile, FilePath xsltStylesheet = null)
+        {
+            settings.HtmlReportFile = htmlFile;
+            settings.StyleSheet = xsltStylesheet;
+            return settings;
+        }
     }
 }
