@@ -9,7 +9,7 @@
 const string Configuration = "Release";
 
     var target = Argument("target", "Build");
-    var nugetApiKey = Argument<string>("nugetApi", null);
+    var nugetApiKey = Argument<string>("nugetApi", EnvironmentVariable("NugetApiKey"));
     var nugetSource = Argument<string>("nugetSource", null); // nuget.org
 
     var solutionFile = File("./Cake.StyleCop.sln");
