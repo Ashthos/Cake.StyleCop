@@ -55,3 +55,16 @@ StyleCopReport(settings => settings
 );
 
 ```
+
+## Customised the transform
+
+There is a default xslt stylesheet which is used, but if you want to override this with your own, you can pass it to the settings in either method as follows
+
+```csharp
+
+var xsltStyleSheet = GetFile("mystylesheet.xslt");
+
+StyleCopAnalyse(settings => settings
+  .ToHtmlReport(htmlFile, xsltStyleSheet)
+);
+```
