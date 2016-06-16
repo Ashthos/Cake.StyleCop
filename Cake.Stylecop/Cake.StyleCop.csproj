@@ -62,12 +62,36 @@
   <ItemGroup>
     <Compile Include="StylecopAlias.cs" />
     <Compile Include="StyleCopHandlers.cs" />
+    <Compile Include="StyleCopReportSettings.cs" />
     <Compile Include="StylecopRunner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StyleCopSettings.cs" />
+    <Compile Include="StyleCopSettingsExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Cake.Stylecop.nuspec" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="resources\error.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\minus.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\plus.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\report.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\stylecop.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="StylecopStyleSheet.xslt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Stylecop.xsd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

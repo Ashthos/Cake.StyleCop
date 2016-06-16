@@ -13,9 +13,58 @@ var target = Argument("target", "StyleCop");
 Task("StyleCop")
   .Does(() =>
 {
-  var solutionFile    = File("./MyProgram.sln");
-  StyleCopAnalyse(solutionFile, null);
+    // solution file
+    var solutionFile = File("MySolution.sln");
+
+    // stylecop settings file
+    var settingsFile = File("Settings.stylecop");
+    
+    // xml results file
+    var resultFile = File("StylecopResults.xml");
+
+    // html report file
+    var htmlFile = File("StylecopResults.html");
+
+    StyleCopAnalyse(settings => settings
+        .WithSolution(solutionFile)
+        .WithSettings(settingsFile)
+        .ToResultFile(resultFile)
+        .ToHtmlReport(htmlFile)
+    );
 });
 
 RunTarget(target);
+```
+
+## Merging multiple stylecop result files
+
+A second method is available if you need to merge several result files together to produce one report. This is useful for many CI servers
+
+```csharp
+
+// html report file
+var htmlFile = File("StylecopResults.html");
+
+// reports 
+var resultFiles = GetFiles("*.xml");
+
+// will merge the xml files together before producing a single html file
+StyleCopReport(settings => settings
+    .ToHtmlReport(htmlFile)
+    .AddResultFiles(resultFiles)
+);
+
+```
+
+## Customise the transform
+
+There is a default xslt stylesheet which is used, but if you want to override this with your own, you can pass it to the settings in either method as follows
+
+```csharp
+
+var xsltStyleSheet = GetFile("mystylesheet.xslt");
+
+StyleCopAnalyse(settings => settings
+  .ToHtmlReport(htmlFile, xsltStyleSheet)
+);
 ```

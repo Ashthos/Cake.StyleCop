@@ -8,11 +8,8 @@
 *.sln.ide/
 
 # Build related
-build-results/
-tools/Cake/
-tools/xunit.runners/
-tools/xunit.runner.console/
-tools/nuget.exe
+artifacts/
+tools/
 
 # mstest test results
 TestResults
@@ -71,3 +68,4 @@ packages
 # Windows
 Thumbs.db
 nuget/
+/.vs/config/applicationhost.config

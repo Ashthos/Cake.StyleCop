@@ -4,8 +4,8 @@
     <id>Cake.StyleCop</id>
     <version>$version$</version>
     <title>Cake.StyleCop</title>
-    <authors>Ash Beeson</authors>
-    <owners>Ash Beeson</owners>
+    <authors>Ash Beeson, Scott Mackay</authors>
+    <owners>Ash Beeson, Scott Mackay</owners>
     <licenseUrl>https://github.com/ashthos/Cake.StyleCop</licenseUrl>
     <projectUrl>https://github.com/ashthos/Cake.StyleCop</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -15,9 +15,15 @@
     <tags>Cake StyleCop</tags>
   </metadata>
   <files>
+    <file src="bin/Release/StyleCopStyleSheet.xslt" target="lib/net45" />
     <file src="bin/Release/StyleCop.dll" target="lib/net45" />
     <file src="bin/Release/StyleCop.CSharp.dll" target="lib/net45" />
     <file src="bin/Release/StyleCop.CSharp.Rules.dll" target="lib/net45" />
-    <file src="bin/Release/Cake.StyleCop.dll" target="lib/net45" />    
+    <file src="bin/Release/Cake.StyleCop.dll" target="lib/net45" />
+    <file src="bin/Release/resources/error.png" target="lib/net45/resources" />
+    <file src="bin/Release/resources/minus.png" target="lib/net45/resources" />
+    <file src="bin/Release/resources/plus.png" target="lib/net45/resources" />
+    <file src="bin/Release/resources/report.js" target="lib/net45/resources" />
+    <file src="bin/Release/resources/stylecop.css" target="lib/net45/resources" />
   </files>
 </package>
