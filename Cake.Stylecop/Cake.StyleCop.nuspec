@@ -6,8 +6,8 @@
     <title>Cake.StyleCop</title>
     <authors>Ash Beeson, Scott Mackay</authors>
     <owners>Ash Beeson, Scott Mackay</owners>
-    <licenseUrl>https://github.com/wwwlicious/Cake.StyleCop</licenseUrl>
-    <projectUrl>https://github.com/wwwlicious/Cake.StyleCop</projectUrl>
+    <licenseUrl>https://github.com/ashthos/Cake.StyleCop</licenseUrl>
+    <projectUrl>https://github.com/ashthos/Cake.StyleCop</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Wraps StyleCop functionality into a CakeBuild addin. Does not require StyleCop to have been integrated with the solution or installed on the build machine.</description>
     <releaseNotes>Initial Release</releaseNotes>
