@@ -2,8 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Globalization;
     using System.Linq;
     using System.Reflection;
     using System.Xml.Linq;
@@ -23,6 +21,8 @@
 
     public static class StyleCopRunner
     {
+        private const string SolutionFolderGuid = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
+
         private static StyleCopSettings settings;
 
         public static void Execute(ICakeContext context, SettingsDelegate settingsDelegate)
@@ -57,7 +57,7 @@
             var styleCopProjects = new List<CodeProject>();
         
             var solution = solutionParser.Parse(solutionFile);
-            foreach (var solutionProject in solution.Projects)
+            foreach (var solutionProject in solution.Projects.Where(x => x.Type.Equals(SolutionFolderGuid, StringComparison.InvariantCultureIgnoreCase)))
             {
                 context.Log.Information($"Stylecop: Found project {solutionProject.Path}");
                 var project = projectParser.Parse(solutionProject.Path);
