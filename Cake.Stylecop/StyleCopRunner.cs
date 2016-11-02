@@ -57,7 +57,7 @@
             var styleCopProjects = new List<CodeProject>();
         
             var solution = solutionParser.Parse(solutionFile);
-            foreach (var solutionProject in solution.Projects.Where(x => x.Type.Equals(SolutionFolderGuid, StringComparison.InvariantCultureIgnoreCase)))
+            foreach (var solutionProject in solution.Projects.Where(x => !x.Type.Equals(SolutionFolderGuid, StringComparison.InvariantCultureIgnoreCase)))
             {
                 context.Log.Information($"Stylecop: Found project {solutionProject.Path}");
                 var project = projectParser.Parse(solutionProject.Path);
