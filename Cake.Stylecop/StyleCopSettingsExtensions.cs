@@ -12,7 +12,6 @@ namespace Cake.Stylecop
             {
                 throw new ArgumentNullException(nameof(solutionFile), "Solution file path is null.");
             }
-
             settings.SolutionFile = solutionFile;
             return settings;
         }
@@ -29,7 +28,6 @@ namespace Cake.Stylecop
             {
                 settings.Addins.Add(filePath);
             }
-
             return settings;
         }
 
