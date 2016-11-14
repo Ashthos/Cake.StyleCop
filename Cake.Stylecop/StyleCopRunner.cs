@@ -24,11 +24,12 @@
     public static class StyleCopRunner
     {
         private static StyleCopSettings settings;
+        private const string FOLDER_PROJECT_TYPE_GUID = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
 
         public static void Execute(ICakeContext context, SettingsDelegate settingsDelegate)
         {
             settings = settingsDelegate(new StyleCopSettings());
-            
+
             // need to get pwd for stylecop.dll for stylesheet
             var assemblyDirectory = AssemblyDirectory(Assembly.GetAssembly(typeof(StyleCopSettings)));
             var toolPath = context.File(assemblyDirectory).Path.GetDirectory();
@@ -39,31 +40,31 @@
             var settingsFile = settings.SettingsFile?.ToString();
             var outputPath = settings.ResultsFile?.ToString();
             var addins = settings.Addins.Count == 0 ? null : settings.Addins.Select(x => x.FullPath).ToList();
-            
+
             var solutionParser = new SolutionParser(context.FileSystem, context.Environment);
             var projectParser = new ProjectParser(context.FileSystem, context.Environment);
-        
+
             var projectPath = solutionFile.MakeAbsolute(context.Environment).GetDirectory();
 
             context.Log.Information($"Stylecop: Found solution {projectPath.FullPath}");
-        
+
             var styleCopConsole = new StyleCopConsole(
-                settingsFile, 
-                settings.WriteResultsCache, /* Input Cache Result */ 
-                outputPath, /* Output file */ 
-                addins, 
+                settingsFile,
+                settings.WriteResultsCache, /* Input Cache Result */
+                outputPath, /* Output file */
+                addins,
                 settings.LoadFromDefaultPath);
-            
+
             var styleCopProjects = new List<CodeProject>();
-        
+
             var solution = solutionParser.Parse(solutionFile);
-            foreach (var solutionProject in solution.Projects)
+            foreach (var solutionProject in solution.Projects.Where(p => p.Type != FOLDER_PROJECT_TYPE_GUID))
             {
                 context.Log.Information($"Stylecop: Found project {solutionProject.Path}");
                 var project = projectParser.Parse(solutionProject.Path);
                 var styleCopProject = new CodeProject(0, solutionProject.Path.GetDirectory().ToString(), new Configuration(null));
                 styleCopProjects.Add(styleCopProject);
-            
+
                 foreach (var projectFile in project.Files)
                 {
                     if (projectFile.FilePath.GetExtension() != ".cs") continue;
@@ -71,8 +72,8 @@
                     context.Log.Debug($"Stylecop: Found file {projectFile.FilePath}");
                     styleCopConsole.Core.Environment.AddSourceCode(styleCopProject, projectFile.FilePath.ToString(), null);
                 }
-            }                
-                
+            }
+
             var handler = new StylecopHandlers(context);
 
             styleCopConsole.OutputGenerated += handler.OnOutputGenerated;
@@ -181,5 +182,5 @@
 
             return xFileRoot;
         }
-    }    
+    }
 }
