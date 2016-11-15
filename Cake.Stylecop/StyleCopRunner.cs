@@ -2,8 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Globalization;
     using System.Linq;
     using System.Reflection;
     using System.Xml.Linq;
@@ -16,8 +14,8 @@
     using Cake.Core.Diagnostics;
     using Cake.Core.IO;
 
-    using StyleCop;
-
+    using global::StyleCop;
+    
     public delegate StyleCopSettings SettingsDelegate(StyleCopSettings settings);
     public delegate StyleCopReportSettings ReportSettingsDelegate(StyleCopReportSettings settings);
 
@@ -48,15 +46,27 @@
 
             context.Log.Information($"Stylecop: Found solution {projectPath.FullPath}");
 
-            var styleCopConsole = new StyleCopConsole(
-                settingsFile,
-                settings.WriteResultsCache, /* Input Cache Result */
-                outputPath, /* Output file */
-                addins,
-                settings.LoadFromDefaultPath);
+            StyleCopConsole styleCopConsole = null;
+
+            try
+            {
+                styleCopConsole = new StyleCopConsole(
+                                      settingsFile,
+                                      settings.WriteResultsCache,
+                                      /* Input Cache Result */
+                                      outputPath,
+                                      /* Output file */
+                                      addins,
+                                      settings.LoadFromDefaultPath);
+            }
+            catch (TypeLoadException typeLoadException)
+            {
+                context.Log.Error($"Error: Stylecop was unable to load an Addin .dll. {typeLoadException.Message}");
+                throw;
+            }
 
             var styleCopProjects = new List<CodeProject>();
-
+            
             var solution = solutionParser.Parse(solutionFile);
             foreach (var solutionProject in solution.Projects.Where(p => p.Type != FOLDER_PROJECT_TYPE_GUID))
             {

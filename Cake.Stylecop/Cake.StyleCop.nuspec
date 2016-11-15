@@ -4,13 +4,13 @@
     <id>Cake.StyleCop</id>
     <version>$version$</version>
     <title>Cake.StyleCop</title>
-    <authors>Ash Beeson, Scott Mackay</authors>
+    <authors>Ash Beeson, Scott Mackay, Miguel Alexandre</authors>
     <owners>Ash Beeson, Scott Mackay</owners>
     <licenseUrl>https://github.com/ashthos/Cake.StyleCop</licenseUrl>
     <projectUrl>https://github.com/ashthos/Cake.StyleCop</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Wraps StyleCop functionality into a CakeBuild addin. Does not require StyleCop to have been integrated with the solution or installed on the build machine.</description>
-    <releaseNotes>Initial Release</releaseNotes>
+    <releaseNotes>Included Reporting and Runtime setting options from @wwwlicious, Upgraded to Cake v0.17, Merged Symbianx PR.</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>Cake StyleCop</tags>
   </metadata>

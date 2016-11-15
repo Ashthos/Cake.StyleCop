@@ -2,6 +2,8 @@
 {
     using Cake.Core;
 
+    using global::StyleCop;
+
     using StyleCop;
 
     public class StylecopHandlers
