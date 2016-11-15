@@ -6,6 +6,10 @@
 
 #Addin "Cake.StyleCop"
 
+// When debugging, use instead of the #Addin above.
+// Note: VS Build often leaves additional dlls in the /bin/* directory that Stylecop errors when attempting to load. Delete these as necessary.
+// #r "Cake.Stylecop/bin/Debug/Cake.StyleCop.dll"
+
 const string Configuration = "Release";
 
     var target = Argument("target", "Build");
@@ -22,7 +26,7 @@ const string Configuration = "Release";
     Task("Clean")
     .Does(() => {
         CleanDirectories(new DirectoryPath[] {
-            //artifactsDir,
+            artifactsDir,
             nupkgDestDir,
             stylecopResultsDir,
             stylecopReportsDir
@@ -52,40 +56,53 @@ const string Configuration = "Release";
         .ContinueOnError()
         .Does(() => {
         
-            var settingsFile = solutionFile.Path.GetDirectory() + File("Settings.stylecop");
-            var resultFile = stylecopResultsDir + File("StylecopResults.xml");
+			var settingsFile = solutionFile.Path.GetDirectory() + File("Settings.stylecop");
+            Information("Settings: " + settingsFile);
+			
+			var resultFile = stylecopResultsDir + File("StylecopResults.xml");
             var htmlFile = stylecopReportsDir + File("StylecopResults.html");
 
-            StyleCopAnalyse(settings => settings
-                .WithSolution(solutionFile)
-                .WithSettings(settingsFile)
-                .ToResultFile(resultFile)
-            );
+			bool rethrow = false;
 
-            var resultFilePattern = stylecopResultsDir.Path + "/*.xml";
-            Information("resultFilePattern: {0}", resultFilePattern);
-            var resultFiles = GetFiles(resultFilePattern);
-            foreach(var file in resultFiles){
-                Information("resultFile: {0}", file.FullPath);
-            }
+			try {
+				StyleCopAnalyse(settings => settings
+					.WithSolution(solutionFile)
+					.WithSettings(settingsFile)
+					.ToResultFile(resultFile)
+				);
+			} catch (Exception exception) {
+				rethrow = true;
+			} finally {
+				var resultFilePattern = stylecopResultsDir.Path + "/*.xml";
+				Information("resultFilePattern: {0}", resultFilePattern);
+				
+				var resultFiles = GetFiles(resultFilePattern);
+				foreach(var file in resultFiles){
+					Information("resultFile: {0}", file.FullPath);
+				}
             
-            StyleCopReport(settings => settings
-                .ToHtmlReport(htmlFile)
-                .AddResultFiles(resultFiles)
-            );
+				StyleCopReport(settings => settings
+					.ToHtmlReport(htmlFile)
+					.AddResultFiles(resultFiles)
+				); 
+
+				if (rethrow) {
+					throw new Exception("Stylecop violations discovered.");
+				}
+			}
         });
 
     Task("Package")
     .IsDependentOn("Code-Quality")
     .Does(() => {
 	
-    var nuGetPackSettings   = new NuGetPackSettings {
-    Version                 = "1.2.8",
-    BasePath                = "./Cake.StyleCop",
-    OutputDirectory         = nupkgDestDir
-    };
+		var nuGetPackSettings   = new NuGetPackSettings {
+		Version                 = "1.1.1",
+		BasePath                = "./Cake.StyleCop",
+		OutputDirectory         = nupkgDestDir
+		};
 
-    NuGetPack(File("./Cake.StyleCop/Cake.StyleCop.nuspec"), nuGetPackSettings);
+		NuGetPack(File("./Cake.StyleCop/Cake.StyleCop.nuspec"), nuGetPackSettings);
 
     });
     
@@ -93,7 +110,7 @@ const string Configuration = "Release";
         .IsDependentOn("Package")
         .Does(() => {
         
-            var packages = GetFiles("./nuget/Cake.StyleCop.*.nupkg");
+            var packages = GetFiles(nupkgDestDir.Path + "/Cake.StyleCop.*.nupkg");
                 
             foreach (var package in packages) {    
                 // Push the package.
