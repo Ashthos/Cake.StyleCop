@@ -16,10 +16,11 @@
   </metadata>
   <files>
     <file src="bin/Release/StyleCopStyleSheet.xslt" target="lib/net45" />
-    <file src="bin/Release/StyleCop.dll" target="lib/net45" />
+    <file src="bin/Release/StyleCop.dll" target="lib/net45" />    
     <file src="bin/Release/StyleCop.CSharp.dll" target="lib/net45" />
     <file src="bin/Release/StyleCop.CSharp.Rules.dll" target="lib/net45" />
     <file src="bin/Release/Cake.StyleCop.dll" target="lib/net45" />
+    <file src="bin/Release/Cake.StyleCop.XML" target="lib/net45" />
     <file src="bin/Release/resources/error.png" target="lib/net45/resources" />
     <file src="bin/Release/resources/minus.png" target="lib/net45/resources" />
     <file src="bin/Release/resources/plus.png" target="lib/net45/resources" />

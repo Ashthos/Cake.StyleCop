@@ -4,6 +4,9 @@ namespace Cake.Stylecop
 
     using Cake.Core.IO;
 
+    /// <summary>
+    /// Extensions that enable a fluent interface onto the StyleCopSettings type.
+    /// </summary>
     public static class StyleCopSettingsExtensions
     {
         /// <summary>

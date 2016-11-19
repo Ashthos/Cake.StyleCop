@@ -2,8 +2,14 @@
 {
     using Cake.Core.IO;
 
+    /// <summary>
+    /// A utility class for configuring stylecop output.
+    /// </summary>
     public class StyleCopReportSettings
     {
+        /// <summary>
+        /// Creates a new instance of the StyleCopReportSettings class.
+        /// </summary>
         public StyleCopReportSettings()
         {
             ResultFiles = new FilePathCollection(new PathComparer(false));

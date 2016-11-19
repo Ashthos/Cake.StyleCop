@@ -2,8 +2,14 @@
 {
     using Cake.Core.IO;
 
+    /// <summary>
+    /// Contains configuration for a stylecop analysis execution.
+    /// </summary>
     public class StyleCopSettings 
     {
+        /// <summary>
+        /// Creates a new instance of the StyleCopSettings class.
+        /// </summary>
         public StyleCopSettings()
         {
             Addins = new DirectoryPathCollection(new PathComparer(false));

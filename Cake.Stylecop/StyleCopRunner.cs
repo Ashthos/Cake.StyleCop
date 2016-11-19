@@ -16,14 +16,33 @@
 
     using global::StyleCop;
     
+    /// <summary>
+    /// A proxy onto the StyleCopSettings type.
+    /// </summary>
+    /// <param name="settings">The settings.</param>
+    /// <returns>The settings.</returns>
     public delegate StyleCopSettings SettingsDelegate(StyleCopSettings settings);
+
+    /// <summary>
+    /// A proxy onto the StyleCopReportSettings type.
+    /// </summary>
+    /// <param name="settings">The settings.</param>
+    /// <returns>The settings.</returns>
     public delegate StyleCopReportSettings ReportSettingsDelegate(StyleCopReportSettings settings);
 
+    /// <summary>
+    /// The class that executes stylecop analysis.
+    /// </summary>
     public static class StyleCopRunner
     {
         private static StyleCopSettings settings;
         private const string FOLDER_PROJECT_TYPE_GUID = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
 
+        /// <summary>
+        /// Starts an analysis run.
+        /// </summary>
+        /// <param name="context">The cake context.</param>
+        /// <param name="settingsDelegate">The stylecop setting to use during the analysis.</param>
         public static void Execute(ICakeContext context, SettingsDelegate settingsDelegate)
         {
             settings = settingsDelegate(new StyleCopSettings());
@@ -112,11 +131,12 @@
         /// <summary>
         /// Transforms the outputted report using an XSL transform file.
         /// </summary>
+        /// <param name="htmlFile">The fully qualified path of the output html file.</param>
         /// <param name="outputXmlFile">
         ///     The fully-qualified path of the report to transform.
         /// </param>
         /// <param name="transformFile">The filePath for the xslt transform</param>
-        /// <param name="context"></param>
+        /// <param name="context">The cake context.</param>
         private static void Transform(ICakeContext context, FilePath htmlFile, FilePath outputXmlFile, FilePath transformFile)
         {
             if (!context.FileExists(outputXmlFile))
@@ -141,6 +161,11 @@
             context.Log.Debug($"Stylecop: Finished transform {outputXmlFile.FullPath} to {htmlFile}");
         }
 
+        /// <summary>
+        /// The Assembly Directory.
+        /// </summary>
+        /// <param name="assembly">Assembly to return the directory path for.</param>
+        /// <returns>The assemblies directory path.</returns>
         public static string AssemblyDirectory(Assembly assembly)
         {
             var codeBase = assembly.CodeBase;
@@ -148,6 +173,11 @@
             return Uri.UnescapeDataString(uri.Path);
         }
 
+        /// <summary>
+        /// Starts the report aggregation process.
+        /// </summary>
+        /// <param name="context">The cake context.</param>
+        /// <param name="settingsDelegate">The settings to use during report aggregation.</param>
         public static void Report(ICakeContext context, ReportSettingsDelegate settingsDelegate)
         {
             try
@@ -178,6 +208,12 @@
             }
         }
 
+        /// <summary>
+        /// Merges two or more Stylecop report files into a single xml document.
+        /// </summary>
+        /// <param name="context">The cake context.</param>
+        /// <param name="resultFiles">A collection of report files to merge.</param>
+        /// <returns>The resultant Xml document.</returns>
         public static XDocument MergeResultFile(ICakeContext context, FilePathCollection resultFiles)
         {
             context.Log.Information($"Stylecop: Loading result xml file {resultFiles.First().FullPath}");
