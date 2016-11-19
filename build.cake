@@ -97,7 +97,7 @@ const string Configuration = "Release";
     .Does(() => {
 	
 		var nuGetPackSettings   = new NuGetPackSettings {
-		Version                 = "1.1.1",
+		Version                 = "1.1.2",
 		BasePath                = "./Cake.StyleCop",
 		OutputDirectory         = nupkgDestDir
 		};
