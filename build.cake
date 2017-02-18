@@ -14,7 +14,7 @@ const string Configuration = "Release";
 
     var target = Argument("target", "Build");
     var nugetApiKey = Argument<string>("nugetApi", EnvironmentVariable("NugetApiKey"));
-    var nugetSource = Argument<string>("nugetSource", null); // nuget.org
+    var nugetSource = Argument<string>("nugetSource", "https://www.nuget.org/api/v2/package");
 
     var solutionFile = File("./Cake.StyleCop.sln");
     var artifactsDir = Directory("./artifacts");
