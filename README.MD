@@ -5,6 +5,8 @@ can be used by Cake build scripts.
 
 The .dlls included are available directly from [The official StyleCop Project page](https://stylecop.codeplex.com/SourceControl/latest#Tools/StyleCop/v4.7/)
 
+Note: Mis-reports some C#6 syntax as violations - this is due to the dll versions available. Once 4.7.55 is fully available from stylecop then this issue can be resolved.
+
 ```csharp
 #addin "Cake.StyleCop"
 

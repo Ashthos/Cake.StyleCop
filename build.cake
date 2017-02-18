@@ -8,13 +8,13 @@
 
 // When debugging, use instead of the #Addin above.
 // Note: VS Build often leaves additional dlls in the /bin/* directory that Stylecop errors when attempting to load. Delete these as necessary.
-// #r "Cake.Stylecop/bin/Debug/Cake.StyleCop.dll"
+// #r "Cake.Stylecop/bin/Release/Cake.StyleCop.dll"
 
 const string Configuration = "Release";
 
     var target = Argument("target", "Build");
     var nugetApiKey = Argument<string>("nugetApi", EnvironmentVariable("NugetApiKey"));
-    var nugetSource = Argument<string>("nugetSource", null); // nuget.org
+    var nugetSource = Argument<string>("nugetSource", "https://www.nuget.org/api/v2/package");
 
     var solutionFile = File("./Cake.StyleCop.sln");
     var artifactsDir = Directory("./artifacts");
@@ -32,7 +32,12 @@ const string Configuration = "Release";
             stylecopReportsDir
         });
 
-        CleanDirectories("./**/bin/**");
+		try {
+			CleanDirectories("./**/bin/**");
+		} catch (Exception exception) {
+			Warning("Failed to clean one or more directories.");
+		}
+
     });
 
     Task("Build")
@@ -97,7 +102,7 @@ const string Configuration = "Release";
     .Does(() => {
 	
 		var nuGetPackSettings   = new NuGetPackSettings {
-		Version                 = "1.1.2",
+		Version                 = "1.1.3",
 		BasePath                = "./Cake.StyleCop",
 		OutputDirectory         = nupkgDestDir
 		};

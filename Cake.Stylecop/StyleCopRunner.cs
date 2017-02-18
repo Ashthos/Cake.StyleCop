@@ -115,8 +115,10 @@
 
             if (settings.HtmlReportFile != null)
             {
+                settings.HtmlReportFile = settings.HtmlReportFile.MakeAbsolute(context.Environment);
+
                 // copy default resources to output folder
-                context.CopyDirectory(context.Directory(toolPath + "/resources"), settings.HtmlReportFile.GetDirectory());
+                context.CopyDirectory(context.Directory(toolPath + "/resources"), settings.HtmlReportFile.GetDirectory() + "/resources");
 
                 context.Log.Information($"Stylecop: Creating html report {settings.HtmlReportFile.FullPath}");
                 Transform(context, settings.HtmlReportFile, settings.ResultsFile.MakeAbsolute(context.Environment), settings.StyleSheet ?? context.MakeAbsolute(defaultStyleSheet));
@@ -188,13 +190,31 @@
 
                 var settings = settingsDelegate(new StyleCopReportSettings());
                 context.Log.Information($"StyleCopReportSetting.HtmlReport: {settings.HtmlReportFile}");
-                context.Log.Information($"StyleCopReportSetting.ResultFiles: {settings.ResultFiles}");
+
+                if (settings.ResultFiles.Count > 1)
+                {
+                    context.Log.Information("StyleCopReportSetting.ResultFiles:");
+                    foreach (var resultFile in settings.ResultFiles)
+                    {
+                        context.Log.Information($"    {resultFile}");
+                    }
+                }
+                else
+                {
+                    context.Log.Information($"StyleCopReportSetting.ResultFiles: {settings.ResultFiles.First()}");
+                }                
 
                 // merge xml files
-                var resultFile = MergeResultFile(context, settings.ResultFiles);
+                var finalResultFile = MergeResultFile(context, settings.ResultFiles);
                 var mergedResultsFile = context.File(settings.HtmlReportFile.GetDirectory() + context.File("/stylecop_merged.xml"));
                 context.Log.Information($"Stylecop: Saving merged results xml file {mergedResultsFile.Path.FullPath}");
-                resultFile.Save(mergedResultsFile);
+
+                if (!context.DirectoryExists(mergedResultsFile.Path.GetDirectory()))
+                {
+                    context.CreateDirectory(mergedResultsFile.Path.GetDirectory());
+                }
+
+                finalResultFile.Save(mergedResultsFile);
 
                 // copy default resources to output folder
                 context.CopyDirectory(context.Directory(toolPath + "/resources"), context.Directory(settings.HtmlReportFile.GetDirectory() + "/resources"));
