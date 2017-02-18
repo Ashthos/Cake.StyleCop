@@ -15,9 +15,11 @@
         /// Analyses the project using stylecop.
         /// </summary>
         /// <example>
+        /// <code>
         /// StyleCopAnalyse(settings => settings
         ///     .WithSolution(solutionFile)       
         /// );
+        /// </code>
         /// </example>
         /// <param name="context">The Context.</param>
         /// <param name="settingsDelegate">Optional settings passed to stylecop.</param>
@@ -41,6 +43,7 @@
         /// Generates summary report from a stylecop execution.
         /// </summary>
         /// <example>
+        /// <code>
         /// StyleCopAnalyse(settings => settings
         ///     .WithSolution(solutionFile)
         ///     .WithSettings(settingsFile)
@@ -51,6 +54,7 @@
         ///     .ToHtmlReport(htmlFile)
         ///     .AddResultFiles(resultFiles)
         /// ); 
+        /// </code>
         /// </example>
         /// <param name="context">The context.</param>
         /// <param name="settingsDelegate">Report generation settings.</param>
