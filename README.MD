@@ -38,6 +38,39 @@ Task("StyleCop")
 RunTarget(target);
 ```
 
+## Analyze not all projects
+
+Methods WithProject() or WithProjects() are useful in case if you do not need to analyze all projects in solution or if you have different stylecop settings for different projects inside your solution.
+
+```csharp
+var target = Argument("target", "StyleCop");
+
+Task("StyleCop")
+  .Does(() =>
+{
+    // project file
+    var projectFile = File("SolutionFolder/FirstOfMany.csproj");
+
+    // stylecop settings file
+    var settingsFile = File("Settings.stylecop");
+    
+    // xml results file
+    var resultFile = File("StylecopResults.xml");
+
+    // html report file
+    var htmlFile = File("StylecopResults.html");
+
+    StyleCopAnalyse(settings => settings
+        .WithProject(projectFile)
+        .WithSettings(settingsFile)
+        .ToResultFile(resultFile)
+        .ToHtmlReport(htmlFile)
+    );
+});
+
+RunTarget(target);
+```
+
 ## Merging multiple stylecop result files
 
 A second method is available if you need to merge several result files together to produce one report. This is useful for many CI servers

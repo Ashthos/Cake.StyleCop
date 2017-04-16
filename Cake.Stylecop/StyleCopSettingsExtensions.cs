@@ -10,6 +10,39 @@ namespace Cake.Stylecop
     public static class StyleCopSettingsExtensions
     {
         /// <summary>
+        /// Specifies the .net project to analyse.
+        /// </summary>
+        /// <param name="settings">The settings object.</param>
+        /// <param name="projectFile">FilePath of the .csproj file.</param>
+        /// <returns>Settings object.</returns>
+        public static StyleCopSettings WithProject(this StyleCopSettings settings, FilePath projectFile)
+        {
+            if (projectFile == null)
+            {
+                throw new ArgumentNullException(nameof(projectFile), "Project file path is null.");
+            }
+
+            settings.ProjectFiles.Add(projectFile);
+            return settings;
+        }
+
+        /// <summary>
+        /// Specifies the list of .net projects to analyse.
+        /// </summary>
+        /// <param name="settings">The settings object.</param>
+        /// <param name="projectFiles">FilePath of the .csproj files.</param>
+        /// <returns>Settings object.</returns>
+        public static StyleCopSettings WithProjects(this StyleCopSettings settings, params FilePath[] projectFiles)
+        {
+            foreach (var projectFile in projectFiles)
+            {
+                WithProject(settings, projectFile);
+            }
+            
+            return settings;
+        }
+
+        /// <summary>
         /// Specifies the .net solution to analyse.
         /// </summary>
         /// <param name="settings">The settings object.</param>

@@ -13,6 +13,7 @@
         public StyleCopSettings()
         {
             Addins = new DirectoryPathCollection(new PathComparer(false));
+            ProjectFiles = new FilePathCollection(new PathComparer(false));
         }
 
         /// <summary>
@@ -63,5 +64,10 @@
         /// The StyleSheet Path
         /// </summary>
         public FilePath StyleSheet { get; set; }
+
+        /// <summary>
+        /// The list of project paths to analyze
+        /// </summary>
+        public FilePathCollection ProjectFiles { get; set; }
     }
 }
