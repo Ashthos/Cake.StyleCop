@@ -73,8 +73,13 @@
     <Compile Include="StyleCopSettingsExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Cake.Stylecop.nuspec" />
+    <None Include="Cake.Stylecop.nuspec">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
+    <None Include="Stylecop.xss">
+      <DependentUpon>Stylecop.xsd</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="resources\error.png">
@@ -95,6 +100,9 @@
     <Content Include="StylecopStyleSheet.xslt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Stylecop.xsc">
+      <DependentUpon>Stylecop.xsd</DependentUpon>
+    </None>
     <None Include="Stylecop.xsd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

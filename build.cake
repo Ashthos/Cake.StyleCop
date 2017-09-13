@@ -4,8 +4,6 @@
 // To execute, run the following within powershell
 // ./Build.ps1 -Target "build"
 
-#Addin "Cake.StyleCop"
-
 // When debugging, use instead of the #Addin above.
 // Note: VS Build often leaves additional dlls in the /bin/* directory that Stylecop errors when attempting to load. Delete these as necessary.
 // #r "Cake.Stylecop/bin/Release/Cake.StyleCop.dll"
@@ -56,49 +54,8 @@ const string Configuration = "Release";
 
     });
     
-    Task("Code-Quality")
-        .IsDependentOn("Build")
-        .ContinueOnError()
-        .Does(() => {
-        
-			var settingsFile = solutionFile.Path.GetDirectory() + File("Settings.stylecop");
-            Information("Settings: " + settingsFile);
-			
-			var resultFile = stylecopResultsDir + File("StylecopResults.xml");
-            var htmlFile = stylecopReportsDir + File("StylecopResults.html");
-
-			bool rethrow = false;
-
-			try {
-				StyleCopAnalyse(settings => settings
-					.WithSolution(solutionFile)
-					.WithSettings(settingsFile)
-					.ToResultFile(resultFile)
-				);
-			} catch (Exception exception) {
-				rethrow = true;
-			} finally {
-				var resultFilePattern = stylecopResultsDir.Path + "/*.xml";
-				Information("resultFilePattern: {0}", resultFilePattern);
-				
-				var resultFiles = GetFiles(resultFilePattern);
-				foreach(var file in resultFiles){
-					Information("resultFile: {0}", file.FullPath);
-				}
-            
-				StyleCopReport(settings => settings
-					.ToHtmlReport(htmlFile)
-					.AddResultFiles(resultFiles)
-				); 
-
-				if (rethrow) {
-					throw new Exception("Stylecop violations discovered.");
-				}
-			}
-        });
-
     Task("Package")
-    .IsDependentOn("Code-Quality")
+    .IsDependentOn("Build")
     .Does(() => {
 	
 		var nuGetPackSettings   = new NuGetPackSettings {
