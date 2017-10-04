@@ -47,6 +47,7 @@
     </Reference>
     <Reference Include="StyleCop.CSharp">
       <HintPath>..\packages\StyleCop.MSBuild.4.7.55.0\tools\StyleCop.CSharp.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="StyleCop.CSharp.Rules">
       <HintPath>..\packages\StyleCop.MSBuild.4.7.55.0\tools\StyleCop.CSharp.Rules.dll</HintPath>
