@@ -47,12 +47,8 @@ const string Configuration = "Release";
         Information("Restoring Nuget Packages");
         NuGetRestore(solutionFile);
             
-        var settings = new MSBuildSettings();
-        settings.Configuration = Configuration;
-        settings.WithTarget("build");
-            
         Information("Compiling Solution");
-        MSBuild(solutionFile, settings);
+        DotNetBuild(solutionFile, settings => settings.SetConfiguration(Configuration).WithTarget("build"));
 
     });
     
@@ -102,7 +98,7 @@ const string Configuration = "Release";
     .Does(() => {
 	
 		var nuGetPackSettings   = new NuGetPackSettings {
-		Version                 = "1.1.3",
+		Version                 = "1.1.4",
 		BasePath                = "./Cake.StyleCop",
 		OutputDirectory         = nupkgDestDir
 		};

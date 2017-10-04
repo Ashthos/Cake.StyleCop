@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Cake.StyleCop</RootNamespace>
     <AssemblyName>Cake.StyleCop</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,24 +33,23 @@
     <DocumentationFile>bin\Release\Cake.StyleCop.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cake.Common, Version=0.17.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Cake.Common.0.17.0\lib\net45\Cake.Common.dll</HintPath>
+    <Reference Include="Cake.Common, Version=0.22.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cake.Common.0.22.0\lib\net46\Cake.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Cake.Core, Version=0.17.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Cake.Core.0.17.0\lib\net45\Cake.Core.dll</HintPath>
+    <Reference Include="Cake.Core, Version=0.22.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cake.Core.0.22.0\lib\net46\Cake.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="StyleCop, Version=4.7.1000.0, Culture=neutral, PublicKeyToken=f904653c63bc2738, processorArchitecture=MSIL">
-      <HintPath>..\packages\StyleCop.Rules.4.7.49\lib\net40\StyleCop.dll</HintPath>
+    <Reference Include="StyleCop">
+      <HintPath>..\packages\StyleCop.MSBuild.4.7.55.0\tools\StyleCop.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="StyleCop.CSharp, Version=4.7.1000.0, Culture=neutral, PublicKeyToken=f904653c63bc2738, processorArchitecture=MSIL">
-      <HintPath>..\packages\StyleCop.Rules.4.7.49\lib\net40\StyleCop.CSharp.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="StyleCop.CSharp">
+      <HintPath>..\packages\StyleCop.MSBuild.4.7.55.0\tools\StyleCop.CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="StyleCop.CSharp.Rules, Version=4.7.1000.0, Culture=neutral, PublicKeyToken=f904653c63bc2738, processorArchitecture=MSIL">
-      <HintPath>..\packages\StyleCop.Rules.4.7.49\lib\net40\StyleCop.CSharp.Rules.dll</HintPath>
+    <Reference Include="StyleCop.CSharp.Rules">
+      <HintPath>..\packages\StyleCop.MSBuild.4.7.55.0\tools\StyleCop.CSharp.Rules.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -72,8 +72,13 @@
     <Compile Include="StyleCopSettingsExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Cake.Stylecop.nuspec" />
+    <None Include="Cake.Stylecop.nuspec">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
+    <None Include="Stylecop.xss">
+      <DependentUpon>Stylecop.xsd</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="resources\error.png">
@@ -94,6 +99,9 @@
     <Content Include="StylecopStyleSheet.xslt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Stylecop.xsc">
+      <DependentUpon>Stylecop.xsd</DependentUpon>
+    </None>
     <None Include="Stylecop.xsd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
