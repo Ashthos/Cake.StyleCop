@@ -52,55 +52,39 @@
             var toolPath = context.File(assemblyDirectory).Path.GetDirectory();
             var defaultStyleSheet = context.File(toolPath + "/StyleCopStyleSheet.xslt");
             context.Log.Information($"Stylecop: Default stylesheet {context.MakeAbsolute(defaultStyleSheet)}");
-
-            var solutionFile = settings.SolutionFile;
-            var settingsFile = settings.SettingsFile?.ToString();
-            var outputPath = settings.ResultsFile?.ToString();
-            var addins = settings.Addins.Count == 0 ? null : settings.Addins.Select(x => x.FullPath).ToList();
-
-            var solutionParser = new SolutionParser(context.FileSystem, context.Environment);
-            var projectParser = new ProjectParser(context.FileSystem, context.Environment);
-
-            var projectPath = solutionFile.MakeAbsolute(context.Environment).GetDirectory();
-
-            context.Log.Information($"Stylecop: Found solution {projectPath.FullPath}");
-
-            StyleCopConsole styleCopConsole = null;
-
-            try
-            {
-                styleCopConsole = new StyleCopConsole(
-                                      settingsFile,
-                                      settings.WriteResultsCache,
-                                      /* Input Cache Result */
-                                      outputPath,
-                                      /* Output file */
-                                      addins,
-                                      settings.LoadFromDefaultPath);
-            }
-            catch (TypeLoadException typeLoadException)
-            {
-                context.Log.Error($"Error: Stylecop was unable to load an Addin .dll. {typeLoadException.Message}");
-                throw;
-            }
+            
+            var styleCopConsole = InitializeStyleCopConsole(context);
 
             var styleCopProjects = new List<CodeProject>();
-            
-            var solution = solutionParser.Parse(solutionFile);
-            foreach (var solutionProject in solution.Projects.Where(p => p.Type != FOLDER_PROJECT_TYPE_GUID))
+
+            var projectParser = new ProjectParser(context.FileSystem, context.Environment);
+            if (settings.SolutionFile != null)
             {
-                context.Log.Information($"Stylecop: Found project {solutionProject.Path}");
-                var project = projectParser.Parse(solutionProject.Path);
-                var styleCopProject = new CodeProject(0, solutionProject.Path.GetDirectory().ToString(), new Configuration(null));
-                styleCopProjects.Add(styleCopProject);
+                var solutionFile = settings.SolutionFile;
+                var projectPath = solutionFile.MakeAbsolute(context.Environment).GetDirectory();
+                context.Log.Information($"Stylecop: Found solution {projectPath.FullPath}");
 
-                foreach (var projectFile in project.Files)
-                {
-                    if (projectFile.FilePath.GetExtension() != ".cs") continue;
+                var solutionParser = new SolutionParser(context.FileSystem, context.Environment);
+                var solution = solutionParser.Parse(solutionFile);
 
-                    context.Log.Debug($"Stylecop: Found file {projectFile.FilePath}");
-                    styleCopConsole.Core.Environment.AddSourceCode(styleCopProject, projectFile.FilePath.ToString(), null);
-                }
+                styleCopProjects
+                    .AddRange(
+                        solution.Projects
+                            .Where(p => p.Type != FOLDER_PROJECT_TYPE_GUID)
+                            .Select(solutionProject =>
+                                InitializeProject(context, solutionProject.Path, projectParser, styleCopConsole)));
+            }
+            else if (settings.ProjectFiles.Count != 0)
+            {
+                styleCopProjects
+                    .AddRange(
+                        settings.ProjectFiles
+                            .Select(
+                                projectFile => InitializeProject(context, projectFile, projectParser, styleCopConsole)));
+            }
+            else
+            {
+                throw new ArgumentException("Solution or Project file was not included");
             }
 
             var handler = new StylecopHandlers(context);
@@ -129,7 +113,7 @@
                 throw new Exception($"{handler.TotalViolations} StyleCop violations encountered.");
             }
         }
-
+        
         /// <summary>
         /// Transforms the outputted report using an XSL transform file.
         /// </summary>
@@ -247,6 +231,68 @@
             }
 
             return xFileRoot;
+        }
+
+        /// <summary>
+        /// Initialize stylecop console
+        /// </summary>
+        /// <param name="context">The cake context.</param>        
+        /// <returns>Instance of stylecop console.</returns>
+        private static StyleCopConsole InitializeStyleCopConsole(
+            ICakeContext context)
+        {
+            var settingsFile = settings.SettingsFile?.ToString();
+            var outputPath = settings.ResultsFile?.ToString();
+            var addins = settings.Addins.Count == 0 ? null : settings.Addins.Select(x => x.FullPath).ToList();
+
+            StyleCopConsole styleCopConsole = null;
+
+            try
+            {
+                styleCopConsole = new StyleCopConsole(
+                    settingsFile,
+                    settings.WriteResultsCache,
+                    /* Input Cache Result */
+                    outputPath,
+                    /* Output file */
+                    addins,
+                    settings.LoadFromDefaultPath);
+            }
+            catch (TypeLoadException typeLoadException)
+            {
+                context.Log.Error($"Error: Stylecop was unable to load an Addin .dll. {typeLoadException.Message}");
+                throw;
+            }
+            return styleCopConsole;
+        }
+
+        /// <summary>
+        /// Initialize project to analyze.
+        /// </summary>
+        /// <param name="context">The cake context.</param>
+        /// <param name="projectPath">The path to a project to analyze.</param>
+        /// <param name="projectParser">The project parser.</param>
+        /// <param name="styleCopConsole">The style cop console.</param>
+        /// <returns>Prepared project to analyze.</returns>
+        private static CodeProject InitializeProject(
+            ICakeContext context,
+            FilePath projectPath,
+            ProjectParser projectParser,
+            StyleCopConsole styleCopConsole)
+        {
+            context.Log.Information($"Stylecop: Found project {projectPath}");
+            var project = projectParser.Parse(projectPath);
+            var styleCopProject = new CodeProject(0, projectPath.GetDirectory().ToString(), new Configuration(null));
+
+            foreach (var projectFile in project.Files)
+            {
+                if (projectFile.FilePath.GetExtension() != ".cs") continue;
+
+                context.Log.Debug($"Stylecop: Found file {projectFile.FilePath}");
+                styleCopConsole.Core.Environment.AddSourceCode(styleCopProject, projectFile.FilePath.ToString(), null);
+            }
+
+            return styleCopProject;
         }
     }
 }
