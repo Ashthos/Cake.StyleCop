@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Reflection;
     using System.Xml.Linq;
@@ -48,7 +49,7 @@
             settings = settingsDelegate(new StyleCopSettings());
 
             // need to get pwd for stylecop.dll for stylesheet
-            var assemblyDirectory = AssemblyDirectory(Assembly.GetAssembly(typeof(StyleCopSettings)));
+            var assemblyDirectory = AssemblyDirectory(typeof(StyleCopSettings).GetTypeInfo().Assembly);
             var toolPath = context.File(assemblyDirectory).Path.GetDirectory();
             var defaultStyleSheet = context.File(toolPath + "/StyleCopStyleSheet.xslt");
             context.Log.Information($"Stylecop: Default stylesheet {context.MakeAbsolute(defaultStyleSheet)}");
@@ -184,7 +185,7 @@
         {
             try
             {
-                var assemblyDirectory = AssemblyDirectory(Assembly.GetAssembly(typeof(StyleCopSettings)));
+                var assemblyDirectory = AssemblyDirectory(typeof(StyleCopSettings).GetTypeInfo().Assembly);
                 var toolPath = context.File(assemblyDirectory).Path.GetDirectory();
                 var defaultStyleSheet = context.File(toolPath + "/StyleCopStyleSheet.xslt");
 
@@ -206,21 +207,25 @@
 
                 // merge xml files
                 var finalResultFile = MergeResultFile(context, settings.ResultFiles);
-                var mergedResultsFile = context.File(settings.HtmlReportFile.GetDirectory() + context.File("/stylecop_merged.xml"));
-                context.Log.Information($"Stylecop: Saving merged results xml file {mergedResultsFile.Path.FullPath}");
 
-                if (!context.DirectoryExists(mergedResultsFile.Path.GetDirectory()))
+                if (finalResultFile != null)
                 {
-                    context.CreateDirectory(mergedResultsFile.Path.GetDirectory());
-                }
+                    var mergedResultsFile = context.File(settings.HtmlReportFile.GetDirectory() + context.File("/stylecop_merged.xml"));
+                    context.Log.Information($"Stylecop: Saving merged results xml file {mergedResultsFile.Path.FullPath}");
 
-                finalResultFile.Save(mergedResultsFile);
+                    if (!context.DirectoryExists(mergedResultsFile.Path.GetDirectory()))
+                    {
+                        context.CreateDirectory(mergedResultsFile.Path.GetDirectory());
+                    }
 
-                // copy default resources to output folder
-                context.CopyDirectory(context.Directory(toolPath + "/resources"), context.Directory(settings.HtmlReportFile.GetDirectory() + "/resources"));
+                    finalResultFile.Save(new FileStream(mergedResultsFile.Path.FullPath, FileMode.CreateNew));
+                    
+                    // copy default resources to output folder
+                    context.CopyDirectory(context.Directory(toolPath + "/resources"), context.Directory(settings.HtmlReportFile.GetDirectory() + "/resources"));
 
-                context.Log.Information($"Stylecop: Creating html report {settings.HtmlReportFile.FullPath}");
-                Transform(context, settings.HtmlReportFile.MakeAbsolute(context.Environment), mergedResultsFile.Path.MakeAbsolute(context.Environment), settings.StyleSheet ?? context.MakeAbsolute(defaultStyleSheet));
+                    context.Log.Information($"Stylecop: Creating html report {settings.HtmlReportFile.FullPath}");
+                    Transform(context, settings.HtmlReportFile.MakeAbsolute(context.Environment), mergedResultsFile.Path.MakeAbsolute(context.Environment), settings.StyleSheet ?? context.MakeAbsolute(defaultStyleSheet));
+                }                               
             }
             catch (Exception e)
             {
@@ -236,12 +241,19 @@
         /// <returns>The resultant Xml document.</returns>
         public static XDocument MergeResultFile(ICakeContext context, FilePathCollection resultFiles)
         {
+            var firstResultFile = resultFiles.FirstOrDefault();
+
+            if (firstResultFile == null)
+            {
+                return null;
+            }
+
             context.Log.Information($"Stylecop: Loading result xml file {resultFiles.First().FullPath}");
-            var xFileRoot = XDocument.Load(resultFiles.First().FullPath);
+            var xFileRoot = XDocument.Load(firstResultFile.FullPath);
 
             foreach (var resultFile in resultFiles.Skip(1))
             {
-                context.Log.Information($"Stylecop: Loading result xml file {resultFile.FullPath}");
+                context.Log.Information($"Stylecop: Merging result xml file {resultFile.FullPath}");
                 var xFileChild = XDocument.Load(resultFile.FullPath);
                 xFileRoot.Root.Add(xFileChild.Root.Elements());
             }

@@ -4,11 +4,11 @@
 // To execute, run the following within powershell
 // ./Build.ps1 -Target "build"
 
-#Addin "Cake.StyleCop"
+// #Addin "Cake.StyleCop"
 
 // When debugging, use instead of the #Addin above.
 // Note: VS Build often leaves additional dlls in the /bin/* directory that Stylecop errors when attempting to load. Delete these as necessary.
-// #r "Cake.Stylecop/bin/Release/Cake.StyleCop.dll"
+#r "Cake.Stylecop/bin/Debug/netstandard2.0/Cake.StyleCop.dll"
 
 const string Configuration = "Release";
 
@@ -35,7 +35,7 @@ const string Configuration = "Release";
 		try {
 			CleanDirectories("./**/bin/**");
 		} catch (Exception exception) {
-			Warning("Failed to clean one or more directories.");
+			Warning("Failed to clean one or more directories. " + exception.Message);
 		}
 
     });
@@ -45,15 +45,18 @@ const string Configuration = "Release";
     .Does(() => {
 
         Information("Restoring Nuget Packages");
-        NuGetRestore(solutionFile);
+        DotNetCoreRestore(solutionFile);
             
         Information("Compiling Solution");
-        DotNetBuild(solutionFile, settings => settings.SetConfiguration(Configuration).WithTarget("build"));
+        var settings = new DotNetCoreBuildSettings();
+        settings.Configuration = Configuration;
+
+        DotNetCoreBuild(solutionFile, settings);
 
     });
     
     Task("Code-Quality")
-        .IsDependentOn("Build")
+        // .IsDependentOn("Build")
         .ContinueOnError()
         .Does(() => {
         
@@ -69,9 +72,10 @@ const string Configuration = "Release";
 				StyleCopAnalyse(settings => settings
 					.WithSolution(solutionFile)
 					.WithSettings(settingsFile)
-					.ToResultFile(resultFile)
-				);
+					
+				); // .ToResultFile(resultFile)
 			} catch (Exception exception) {
+				Information(exception.Message);
 				rethrow = true;
 			} finally {
 				var resultFilePattern = stylecopResultsDir.Path + "/*.xml";
