@@ -69,3 +69,4 @@ packages
 Thumbs.db
 nuget/
 /.vs/config/applicationhost.config
+/.vs
