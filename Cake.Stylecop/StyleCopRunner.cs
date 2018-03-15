@@ -103,7 +103,7 @@
                 }
             }
 
-            var handler = new StylecopHandlers(context);
+            var handler = new StylecopHandlers(context, settings);
 
             styleCopConsole.OutputGenerated += handler.OnOutputGenerated;
             styleCopConsole.ViolationEncountered += handler.ViolationEncountered;
@@ -124,7 +124,7 @@
                 Transform(context, settings.HtmlReportFile, settings.ResultsFile.MakeAbsolute(context.Environment), settings.StyleSheet ?? context.MakeAbsolute(defaultStyleSheet));
             }
 
-            if (handler.TotalViolations > 0)
+            if (handler.TotalViolations > 0 && settings.FailTask)
             {
                 throw new Exception($"{handler.TotalViolations} StyleCop violations encountered.");
             }

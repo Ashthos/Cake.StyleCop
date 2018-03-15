@@ -10,6 +10,7 @@
     public class StylecopHandlers
     {
         private readonly ICakeContext _context;
+        private readonly StyleCopSettings _settings;
 
         private int _totalViolations;
 
@@ -17,9 +18,10 @@
         /// Creates a new instance.
         /// </summary>
         /// <param name="context">The context.</param>
-        public StylecopHandlers(ICakeContext context)
+        public StylecopHandlers(ICakeContext context, StyleCopSettings settings)
         {
             _context = context;
+            _settings = settings;
         }
 
         /// <summary>
@@ -52,9 +54,12 @@
         {
             _totalViolations++;
 
-            Cake.Common.Diagnostics.LoggingAliases.Error(
-                _context,
-                string.Format("{0}: {1} @ Line {2}", args.Violation.Rule.CheckId, args.Message, args.LineNumber));
+            if (_settings.OutputIssues)
+            {
+                Cake.Common.Diagnostics.LoggingAliases.Error(
+                    _context,
+                    string.Format("{0}: {1} @ Line {2}", args.Violation.Rule.CheckId, args.Message, args.LineNumber));
+            }
         }
     }
 }

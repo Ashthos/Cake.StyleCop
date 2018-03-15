@@ -132,5 +132,27 @@ namespace Cake.Stylecop
             settings.ResultFiles = resultFiles;
             return settings;
         }
+
+        /// <summary>
+        /// Indicates that the task should not fail upon encountering validation issues.
+        /// </summary>
+        /// <param name="settings">The settings object.</param>
+        /// <returns>Settings object.</returns>
+        public static StyleCopSettings DoNotFailTask(this StyleCopSettings settings)
+        {
+            settings.FailTask = false;
+            return settings;
+        }
+
+        /// <summary>
+        /// Indicates that validation issues should not be written to stderr.
+        /// </summary>
+        /// <param name="settings">The settings object.</param>
+        /// <returns>Settings object.</returns>
+        public static StyleCopSettings SuppressOutput(this StyleCopSettings settings)
+        {
+            settings.OutputIssues = false;
+            return settings;
+        }
     }
 }

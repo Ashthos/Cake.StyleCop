@@ -13,6 +13,8 @@
         public StyleCopSettings()
         {
             Addins = new DirectoryPathCollection(new PathComparer(false));
+            FailTask = true;
+            OutputIssues = true;
         }
 
         /// <summary>
@@ -63,5 +65,15 @@
         /// The StyleSheet Path
         /// </summary>
         public FilePath StyleSheet { get; set; }
+
+        /// <summary>
+        /// Indicates whether to fail the cake task.
+        /// </summary>
+        public bool FailTask { get; set; }
+
+        /// <summary>
+        /// Indicates whether to output stylecop validation errors.
+        /// </summary>
+        public bool OutputIssues { get; set; }
     }
 }
