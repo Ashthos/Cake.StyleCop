@@ -35,8 +35,8 @@
     /// </summary>
     public static class StyleCopRunner
     {
+        private const string FolderProjectTypeGuid = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
         private static StyleCopSettings settings;
-        private const string FOLDER_PROJECT_TYPE_GUID = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
 
         /// <summary>
         /// Starts an analysis run.
@@ -87,7 +87,7 @@
             var styleCopProjects = new List<CodeProject>();
             
             var solution = solutionParser.Parse(solutionFile);
-            foreach (var solutionProject in solution.Projects.Where(p => p.Type != FOLDER_PROJECT_TYPE_GUID))
+            foreach (var solutionProject in solution.Projects.Where(p => p.Type != FolderProjectTypeGuid))
             {
                 context.Log.Information($"Stylecop: Found project {solutionProject.Path}");
                 var project = projectParser.Parse(solutionProject.Path);
@@ -96,7 +96,10 @@
 
                 foreach (var projectFile in project.Files)
                 {
-                    if (projectFile.FilePath.GetExtension() != ".cs") continue;
+                    if (projectFile.FilePath.GetExtension() != ".cs")
+                    {
+                        continue;
+                    }
 
                     context.Log.Debug($"Stylecop: Found file {projectFile.FilePath}");
                     styleCopConsole.Core.Environment.AddSourceCode(styleCopProject, projectFile.FilePath.ToString(), null);
@@ -128,39 +131,6 @@
             {
                 throw new Exception($"{handler.TotalViolations} StyleCop violations encountered.");
             }
-        }
-
-        /// <summary>
-        /// Transforms the outputted report using an XSL transform file.
-        /// </summary>
-        /// <param name="htmlFile">The fully qualified path of the output html file.</param>
-        /// <param name="outputXmlFile">
-        ///     The fully-qualified path of the report to transform.
-        /// </param>
-        /// <param name="transformFile">The filePath for the xslt transform</param>
-        /// <param name="context">The cake context.</param>
-        private static void Transform(ICakeContext context, FilePath htmlFile, FilePath outputXmlFile, FilePath transformFile)
-        {
-            if (!context.FileExists(outputXmlFile))
-            {
-                context.Log.Warning($"Stylecop: Output file not found {outputXmlFile.FullPath}");
-                return;
-            }
-
-            if (!context.FileExists(transformFile))
-            {
-                context.Log.Warning($"Stylecop: Transform file not found {transformFile.FullPath}");
-                return;
-            }
-
-            var xt = new XslCompiledTransform();
-            context.Log.Debug($"Stylecop: Loading transform {transformFile.FullPath}");
-            xt.Load(transformFile.FullPath);
-            context.Log.Debug($"Stylecop: Loaded transform {transformFile.FullPath}");
-
-            context.Log.Debug($"Stylecop: Starting transform {outputXmlFile.FullPath} to {htmlFile}");
-            xt.Transform(outputXmlFile.FullPath, htmlFile.FullPath);
-            context.Log.Debug($"Stylecop: Finished transform {outputXmlFile.FullPath} to {htmlFile}");
         }
 
         /// <summary>
@@ -247,6 +217,39 @@
             }
 
             return xFileRoot;
+        }
+
+        /// <summary>
+        /// Transforms the outputted report using an XSL transform file.
+        /// </summary>
+        /// <param name="htmlFile">The fully qualified path of the output html file.</param>
+        /// <param name="outputXmlFile">
+        ///     The fully-qualified path of the report to transform.
+        /// </param>
+        /// <param name="transformFile">The filePath for the xslt transform</param>
+        /// <param name="context">The cake context.</param>
+        private static void Transform(ICakeContext context, FilePath htmlFile, FilePath outputXmlFile, FilePath transformFile)
+        {
+            if (!context.FileExists(outputXmlFile))
+            {
+                context.Log.Warning($"Stylecop: Output file not found {outputXmlFile.FullPath}");
+                return;
+            }
+
+            if (!context.FileExists(transformFile))
+            {
+                context.Log.Warning($"Stylecop: Transform file not found {transformFile.FullPath}");
+                return;
+            }
+
+            var xt = new XslCompiledTransform();
+            context.Log.Debug($"Stylecop: Loading transform {transformFile.FullPath}");
+            xt.Load(transformFile.FullPath);
+            context.Log.Debug($"Stylecop: Loaded transform {transformFile.FullPath}");
+
+            context.Log.Debug($"Stylecop: Starting transform {outputXmlFile.FullPath} to {htmlFile}");
+            xt.Transform(outputXmlFile.FullPath, htmlFile.FullPath);
+            context.Log.Debug($"Stylecop: Finished transform {outputXmlFile.FullPath} to {htmlFile}");
         }
     }
 }

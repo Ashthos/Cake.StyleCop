@@ -18,6 +18,7 @@
         /// Creates a new instance.
         /// </summary>
         /// <param name="context">The context.</param>
+        /// <param name="settings">The settings for StyleCop addin.</param>
         public StylecopHandlers(ICakeContext context, StyleCopSettings settings)
         {
             _context = context;
