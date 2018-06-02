@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cake.Stylecop", "Cake.Stylecop\Cake.Stylecop.csproj", "{533D0E04-D306-4427-BA0E-29FAC90A6867}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cake.Stylecop", "Cake.Stylecop\Cake.StyleCop.csproj", "{533D0E04-D306-4427-BA0E-29FAC90A6867}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{CDA19AC4-F3E1-478D-B1AF-D25595081461}"
 	ProjectSection(SolutionItems) = preProject
